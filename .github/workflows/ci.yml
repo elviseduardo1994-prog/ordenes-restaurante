@@ -35,3 +35,12 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t restaurant-api:${{ github.sha }} app
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: 'restaurant-api:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
