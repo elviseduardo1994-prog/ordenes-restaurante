@@ -47,3 +47,38 @@ jobs:
             --cluster ${{ secrets.ECS_CLUSTER }} \
             --service ${{ secrets.ECS_SERVICE }} \
             --force-new-deployment
+
+      - name: Wait for ECS service stability
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ secrets.ECS_CLUSTER }} \
+            --services ${{ secrets.ECS_SERVICE }}
+
+      - name: Validate deployment health
+        run: |
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://TU-ALB-DNS/health)
+
+          if [ "$STATUS" -ne 200 ]; then
+            echo "Health check failed"
+            exit 1
+          fi
+
+          echo "Deployment healthy"
+
+      - name: Rollback deployment
+        if: failure()
+        run: |
+
+          PREVIOUS_TASK=$(aws ecs describe-services \
+            --cluster ${{ secrets.ECS_CLUSTER }} \
+            --services ${{ secrets.ECS_SERVICE }} \
+            --query "services[0].taskDefinition" \
+            --output text)
+
+          echo "Rolling back to previous stable task definition"
+
+          aws ecs update-service \
+            --cluster ${{ secrets.ECS_CLUSTER }} \
+            --service ${{ secrets.ECS_SERVICE }} \
+            --task-definition $PREVIOUS_TASK \
+            --force-new-deployment    
