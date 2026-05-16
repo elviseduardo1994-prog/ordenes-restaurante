@@ -2,40 +2,36 @@ name: CI Pipeline
 
 on:
   push:
-    branches:
-      - main
-      - develop
-
+    branches: [ "main", "develop" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
-
   ci:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
-          cd app
-          pip install -r requirements.txt
+          pip install -r app/requirements.txt
+          pip install pytest flake8
+
+      - name: Lint code
+        run: |
+          flake8 app/src
 
       - name: Run tests
         run: |
-          python -m pytest
+          pytest app/tests
 
       - name: Build Docker image
         run: |
-          cd app
-          docker build -t restaurant-api .
+          docker build -t restaurant-api:${{ github.sha }} app
