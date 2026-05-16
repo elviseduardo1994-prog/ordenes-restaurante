@@ -31,30 +31,36 @@ Amazon ECS Fargate
 Application Load Balancer
    ↓
 Flask REST API
+```
 
+La infraestructura fue aprovisionada completamente utilizando Terraform.
 
-# Tecnologías utilizadas
+---
 
-| Componente                  | Tecnología                |
-| --------------------------- | ------------------------- |
-| Lenguaje                    | Python 3.11               |
-| Framework                   | Flask                     |
-| Testing                     | Pytest                    |
-| Análisis de calidad         | Flake8                    |
-| Containerización            | Docker                    |
-| CI/CD                       | GitHub Actions            |
-| Infraestructura como Código | Terraform                 |
-| Cloud Provider              | AWS                       |
-| Registro de imágenes        | Amazon ECR                |
-| Ejecución de contenedores   | Amazon ECS Fargate        |
-| Balanceador de carga        | Application Load Balancer |
-| Logging                     | CloudWatch Logs           |
-| Escaneo de seguridad        | Trivy                     |
-| Backend Terraform           | S3 + DynamoDB             |
+# Tecnologías Utilizadas
 
+| Componente | Tecnología |
+|---|---|
+| Lenguaje | Python 3.11 |
+| Framework | Flask |
+| Testing | Pytest |
+| Análisis de calidad | Flake8 |
+| Containerización | Docker |
+| CI/CD | GitHub Actions |
+| Infraestructura como Código | Terraform |
+| Cloud Provider | AWS |
+| Registro de imágenes | Amazon ECR |
+| Ejecución de contenedores | Amazon ECS Fargate |
+| Balanceador de carga | Application Load Balancer |
+| Logging | CloudWatch Logs |
+| Escaneo de seguridad | Trivy |
+| Backend Terraform | S3 + DynamoDB |
 
-# Estructura del proyecto
+---
 
+# Estructura del Proyecto
+
+```text
 app/
  ├── src/
  ├── tests/
@@ -70,7 +76,9 @@ terraform/
 .github/workflows/
  ├── ci.yml
  └── deploy.yml
+```
 
+---
 
 # Funcionalidades de la Aplicación
 
@@ -78,44 +86,62 @@ terraform/
 
 ### Health Check
 
+```http
 GET /health
+```
 
 Respuesta:
 
+```json
 {
   "status": "UP"
 }
+```
 
+---
 
 ### Crear Pedido
 
+```http
 POST /orders
+```
 
 Request:
 
+```json
 {
   "customer": "cliente",
   "items": ["item1", "item2"]
 }
+```
 
 Respuesta:
 
+```json
 {
   "order_id": 1,
   "status": "created"
 }
+```
+
+---
 
 ### Consultar Pedido
 
+```http
 GET /orders/{id}
+```
 
 Respuesta:
 
+```json
 {
   "customer": "cliente",
   "items": ["item1", "item2"]
 }
+```
 
+---
 
 # Infraestructura como Código (Terraform)
 
@@ -123,22 +149,24 @@ La infraestructura fue aprovisionada utilizando Terraform siguiendo principios d
 
 ## Recursos Aprovisionados
 
-VPC
-Public Subnets
-Internet Gateway
-Route Tables
-Security Groups
-ECS Cluster
-ECS Service
-ECS Task Definition
-CloudWatch Log Group
-ECR Repository
-Application Load Balancer
-Target Group
-HTTP Listener
-IAM Roles y Policies
+- VPC
+- Public Subnets
+- Internet Gateway
+- Route Tables
+- Security Groups
+- ECS Cluster
+- ECS Service
+- ECS Task Definition
+- CloudWatch Log Group
+- ECR Repository
+- Application Load Balancer
+- Target Group
+- HTTP Listener
+- IAM Roles y Policies
 
-## Backend Remoto Terraform
+---
+
+# Backend Remoto Terraform
 
 El manejo remoto del estado Terraform fue implementado utilizando:
 
@@ -147,32 +175,41 @@ El manejo remoto del estado Terraform fue implementado utilizando:
 
 Esto evita corrupción del state durante ejecuciones concurrentes.
 
+---
+
 # Pipeline de Integración Continua (CI)
 
 El pipeline CI fue implementado utilizando GitHub Actions.
 
-- Etapas del Pipeline CI
+## Etapas del Pipeline CI
+
 - Checkout del código fuente
--Configuración de Python
+- Configuración de Python
 - Instalación de dependencias
 - Análisis estático de código con Flake8
 - Ejecución de pruebas unitarias con Pytest
 - Construcción de imagen Docker
 - Escaneo de vulnerabilidades con Trivy
-- Controles de Seguridad Implementados
+
+---
+
+# Controles de Seguridad Implementados
 
 El pipeline incorpora controles DevSecOps para evitar despliegues inseguros.
 
-# Escaneo de Vulnerabilidades
+## Escaneo de Vulnerabilidades
 
 Trivy se utiliza para escanear imágenes Docker buscando:
 
 - Vulnerabilidades críticas
 - Vulnerabilidades de alta severidad
 - Dependencias inseguras
-- Security Gates
+
+## Security Gates
 
 El pipeline bloquea despliegues si detecta vulnerabilidades críticas.
+
+---
 
 # Pipeline de Despliegue Continuo (CD)
 
@@ -185,7 +222,10 @@ El pipeline CD ejecuta:
 - Despliegue en ECS Fargate
 - Validación de estabilidad del servicio
 - Validación post-despliegue mediante Health Check
-- Gestión Segura de Secretos
+
+---
+
+# Gestión Segura de Secretos
 
 Las credenciales sensibles son gestionadas utilizando GitHub Actions Secrets.
 
@@ -194,13 +234,18 @@ No existen:
 - Credenciales hardcodeadas
 - Variables sensibles expuestas
 - Secretos almacenados en el repositorio
-- Estrategia de Versionamiento
+
+---
+
+# Estrategia de Versionamiento
 
 Las imágenes Docker son versionadas utilizando el SHA del commit GitHub.
 
 Ejemplo:
 
+```text
 restaurant-api:<commit-sha>
+```
 
 Esto permite:
 
@@ -208,33 +253,42 @@ Esto permite:
 - Despliegues controlados
 - Recuperación de versiones
 - Rollback seguro
-- Monitoreo y Observabilidad
+
+---
+
+# Monitoreo y Observabilidad
 
 La solución implementa observabilidad básica utilizando servicios nativos de AWS.
 
-- Componentes de Monitoreo
-- CloudWatch Logs
+## Componentes de Monitoreo
+
+### CloudWatch Logs
 
 Los logs de la aplicación son centralizados en CloudWatch Logs.
 
-# Monitoreo ECS
+### Monitoreo ECS
 
 ECS monitorea:
 
 - Estado de tareas
 - Fallos de despliegue
 - Estado del servicio
-- Health Checks Application Load Balancer
+
+### Health Checks Application Load Balancer
 
 El ALB valida periódicamente:
 
+```text
 /health
+```
 
 Los targets son marcados automáticamente como unhealthy si la aplicación deja de responder correctamente.
 
-Validación Post-Deploy
+### Validación Post-Deploy
 
-El pipeline ejecuta validaciones automáticas posteriores al despliegue mediante consultas al endpoint /health.
+El pipeline ejecuta validaciones automáticas posteriores al despliegue mediante consultas al endpoint `/health`.
+
+---
 
 # Estrategia de Rollback
 
@@ -254,14 +308,21 @@ Beneficios:
 - Continuidad operativa
 - Reducción de downtime
 - Trazabilidad de despliegues
-- Estrategia de Branching
+
+---
+
+# Estrategia de Branching
 
 La solución soporta:
 
-- master → despliegues productivos
+- `master` → despliegues productivos
 - Pull Requests → validaciones automáticas
-- Flujo General de Despliegue
-- Primer Despliegue
+
+---
+
+# Flujo General de Despliegue
+
+## Primer Despliegue
 
 Terraform aprovisiona:
 
@@ -271,7 +332,8 @@ Terraform aprovisiona:
 - ALB
 - IAM
 - Logging
-- Despliegue de Aplicación
+
+## Despliegue de Aplicación
 
 GitHub Actions:
 
@@ -280,7 +342,11 @@ GitHub Actions:
 - Ejecuta escaneos de seguridad
 - Publica imagen en ECR
 - Despliega sobre ECS
-- Buenas Prácticas Implementadas
+
+---
+
+# Buenas Prácticas Implementadas
+
 - Infraestructura como Código
 - Containerización inmutable
 - Gestión segura de secretos
@@ -292,7 +358,10 @@ GitHub Actions:
 - Health checks automáticos
 - Despliegues trazables
 - Observabilidad básica
-- Evidencias Generadas
+
+---
+
+# Evidencias Generadas
 
 Durante la implementación se generaron evidencias de:
 
@@ -304,7 +373,10 @@ Durante la implementación se generaron evidencias de:
 - Funcionamiento API REST
 - Validación rollback
 - Logs centralizados en CloudWatch
-- Posibles Mejoras Futuras
+
+---
+
+# Posibles Mejoras Futuras
 
 La solución puede evolucionar incorporando:
 
@@ -318,9 +390,10 @@ La solución puede evolucionar incorporando:
 - Kubernetes/EKS
 - Dashboards avanzados observabilidad
 
-## Conclusión
+---
+
+# Conclusión
 
 La solución implementa un flujo DevSecOps completo utilizando AWS, Terraform, Docker, GitHub Actions y ECS Fargate.
 
 La plataforma incorpora automatización CI/CD, controles de seguridad, despliegues containerizados, monitoreo básico y estrategias de rollback siguiendo prácticas modernas DevSecOps.
-```
