@@ -56,7 +56,7 @@ jobs:
 
       - name: Validate deployment health
         run: |
-          STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://TU-ALB-DNS/health)
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://${{ secrets.ALB_DNS }}/health)
 
           if [ "$STATUS" -ne 200 ]; then
             echo "Health check failed"
